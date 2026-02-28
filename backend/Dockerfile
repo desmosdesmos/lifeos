@@ -1,13 +1,12 @@
-# Life OS Backend - Docker Image v5
+# Life OS Backend - Docker Image v6
 # Build: Node.js 18 + TypeScript + Prisma
-# Updated: March 1, 2026 - FORCE REBUILD
-FROM node:18-alpine
+# Using Debian instead of Alpine for SSL compatibility
+FROM node:18-slim
 
 WORKDIR /app
 
-# Build version file (cache buster)
-COPY .build-version ./
-ARG BUILD_VERSION=4
+# Install OpenSSL dependency
+RUN apt-get update && apt-get install -y openssl libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Install ALL dependencies (dev + prod for build)
 COPY package.json ./
