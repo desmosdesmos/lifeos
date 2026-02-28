@@ -5,8 +5,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (используем npm install вместо npm ci)
-RUN npm install --production
+# Install ALL dependencies (including dev for build)
+RUN npm install
 
 # Copy source
 COPY . .
@@ -16,6 +16,9 @@ RUN npx prisma generate
 
 # Build
 RUN npm run build
+
+# Install production dependencies only
+RUN npm prune --production
 
 # Expose port
 EXPOSE 3000
