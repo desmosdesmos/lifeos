@@ -1,3 +1,4 @@
+# Life OS Backend - Node.js + Express + Prisma
 FROM node:18-alpine
 
 WORKDIR /app
@@ -14,7 +15,7 @@ COPY . .
 # Generate Prisma client
 RUN npx prisma generate
 
-# Build
+# Build TypeScript
 RUN npm run build
 
 # Install production dependencies only
@@ -23,5 +24,5 @@ RUN npm prune --production
 # Expose port
 EXPOSE 3000
 
-# Start
+# Start server
 CMD ["node", "dist/index.js"]
