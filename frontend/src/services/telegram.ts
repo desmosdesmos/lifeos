@@ -3,33 +3,47 @@ class TelegramService {
   private isInitialized = false;
 
   init() {
-    if (this.isInitialized) return;
+    if (this.isInitialized) return this.webApp;
 
-    const tg = (window as any).TelegramWebApp;
+    console.log('[Telegram] Init called, window.TelegramWebApp:', !!(window as any).TelegramWebApp);
     
-    console.log('[Telegram] Window TelegramWebApp:', !!tg);
+    const tg = (window as any).TelegramWebApp;
     
     if (tg) {
       this.webApp = tg;
       
       // Ready signal
-      this.webApp.ready();
+      try {
+        this.webApp.ready();
+        console.log('[Telegram] ready() called');
+      } catch (e) {
+        console.warn('[Telegram] ready() error:', e);
+      }
       
       // Expand
-      this.webApp.expand();
+      try {
+        this.webApp.expand();
+        console.log('[Telegram] expand() called');
+      } catch (e) {
+        console.warn('[Telegram] expand() error:', e);
+      }
       
       console.log('[Telegram] Initialized');
-      console.log('[Telegram] initData:', this.webApp.initData ? 'Present (' + this.webApp.initData.length + ' chars)' : 'Not present');
+      console.log('[Telegram] initData:', this.webApp.initData ? this.webApp.initData.length + ' chars' : 'Not present');
       console.log('[Telegram] initDataUnsafe:', this.webApp.initDataUnsafe);
       console.log('[Telegram] themeParams:', this.webApp.themeParams);
+      console.log('[Telegram] version:', this.webApp.version);
       
       // Настраиваем цвета под тему Telegram
       this.applyThemeColors();
       
       this.isInitialized = true;
     } else {
-      console.warn('[Telegram] TelegramWebApp not found!');
+      console.error('[Telegram] TelegramWebApp NOT FOUND!');
+      console.error('[Telegram] Are you opening this app from Telegram?');
     }
+    
+    return this.webApp;
   }
 
   private applyThemeColors() {
@@ -48,6 +62,10 @@ class TelegramService {
   }
 
   getWebApp(): any {
+    if (!this.webApp) {
+      console.warn('[Telegram] getWebApp called before init()');
+      return this.init();
+    }
     return this.webApp;
   }
 
@@ -61,8 +79,12 @@ class TelegramService {
   }
 
   getInitData(): string | null {
+    if (!this.webApp) {
+      console.warn('[Telegram] getInitData called before init()');
+      this.init();
+    }
     const data = this.webApp?.initData;
-    console.log('[Telegram] getInitData called, result:', data ? 'Present (' + data.length + ' chars)' : 'null');
+    console.log('[Telegram] getInitData:', data ? data.length + ' chars' : 'null');
     return data || null;
   }
 
@@ -73,7 +95,10 @@ class TelegramService {
 
   // Haptic feedback
   haptic(style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' | 'error' | 'success' | 'warning') {
-    if (!this.webApp?.HapticFeedback) return;
+    if (!this.webApp?.HapticFeedback) {
+      console.warn('[Telegram] HapticFeedback not available');
+      return;
+    }
 
     switch (style) {
       case 'light':
@@ -105,7 +130,10 @@ class TelegramService {
 
   // Показывать/скрывать главную кнопку
   showMainButton(text: string, onClick: () => void) {
-    if (!this.webApp?.MainButton) return;
+    if (!this.webApp?.MainButton) {
+      console.warn('[Telegram] MainButton not available');
+      return;
+    }
 
     this.webApp.MainButton.setText(text);
     this.webApp.MainButton.onClick(onClick);
