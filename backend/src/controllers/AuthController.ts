@@ -89,6 +89,52 @@ export class AuthController {
   }
 
   /**
+   * Dev авторизация
+   * POST /api/auth/dev
+   */
+  async devAuth(req: Request, res: Response) {
+    try {
+      logger.info('=== Dev Auth Request ===');
+      logger.info('Request body:', JSON.stringify(req.body, null, 2));
+      
+      const { telegramId, username, firstName, lastName } = req.body;
+
+      if (!telegramId) {
+        logger.error('No telegramId in dev auth request');
+        res.status(400).json({ error: 'telegramId is required' });
+        return;
+      }
+
+      logger.info('Dev auth for telegramId:', telegramId);
+
+      const result = await authService.authorize({
+        id: telegramId.toString(),
+        username: username || 'dev_user',
+        first_name: firstName || 'Dev',
+        last_name: lastName || 'User',
+        language_code: 'ru',
+      });
+
+      logger.info(`Dev user authorized: ${result.user.telegramId}`);
+      logger.info('=== Dev Auth Success ===');
+
+      res.json({
+        success: true,
+        user: result.user,
+        token: result.token,
+      });
+    } catch (error: any) {
+      logger.error('=== Dev Auth Error ===');
+      logger.error('Error:', error.message);
+      logger.error('Stack:', error.stack);
+      res.status(500).json({ 
+        error: 'Internal server error',
+        details: error.message 
+      });
+    }
+  }
+
+  /**
    * Обновление весов сфер
    * PUT /api/auth/weights
    */
@@ -139,38 +185,6 @@ export class AuthController {
       });
     } catch (error) {
       logger.error('Get weights error:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  }
-
-  /**
-   * Dev: авторизация без проверки Telegram (для тестирования)
-   * POST /api/auth/dev
-   */
-  async devAuth(req: Request, res: Response) {
-    try {
-      const { telegramId, username, firstName, lastName } = req.body;
-
-      if (!telegramId) {
-        res.status(400).json({ error: 'telegramId is required' });
-        return;
-      }
-
-      const result = await authService.authorize({
-        id: telegramId.toString(),
-        username: username || 'dev_user',
-        first_name: firstName || 'Dev',
-        last_name: lastName || 'User',
-        language_code: 'ru',
-      });
-
-      res.json({
-        success: true,
-        user: result.user,
-        token: result.token,
-      });
-    } catch (error) {
-      logger.error('Dev auth error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
