@@ -16,15 +16,26 @@ function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [devMode, setDevMode] = useState(false);
   const [devTelegramId, setDevTelegramId] = useState('123456789');
+  const [tgDebug, setTgDebug] = useState<string>('');
   const { setUser, setToken } = useAppStore();
 
   useEffect(() => {
     console.log('[AuthPage] Initializing Telegram...');
     telegramService.init();
     
+    // Debug info
+    const tg = telegramService.getWebApp();
+    const debugInfo = [
+      `WebApp: ${tg ? 'Yes' : 'No'}`,
+      `initData: ${tg?.initData ? tg.initData.length + ' chars' : 'No'}`,
+      `user: ${tg?.initDataUnsafe?.user ? 'Yes' : 'No'}`,
+      `theme: ${tg?.themeParams?.bg_color || 'unknown'}`,
+    ].join(' | ');
+    setTgDebug(debugInfo);
+    
     // Проверяем есть ли initData от Telegram
     const initData = telegramService.getInitData();
-    console.log('[AuthPage] initData:', initData ? 'Present' : 'Not present');
+    console.log('[AuthPage] initData:', initData ? 'Present (' + initData.length + ' chars)' : 'Not present');
     
     // Если initData есть, пробуем авторизоваться автоматически
     if (initData) {
@@ -64,13 +75,16 @@ function AuthPage() {
 
     try {
       const response = await apiService.authDev(devTelegramId, 'dev_user', 'Dev User');
+      console.log('[DevAuth] Response:', response);
       
       if (response.success) {
         setUser(response.user);
         setToken(response.token);
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to authenticate');
+      console.error('[DevAuth] Error:', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.details || 'Failed to authenticate';
+      setError(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
     } finally {
       setIsAuthenticating(false);
     }
@@ -78,8 +92,15 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 safe-top safe-bottom">
+      {/* Debug Info */}
+      {tgDebug && (
+        <div className="fixed top-4 left-4 right-4 bg-ios-card-secondary rounded-[10px] p-3 text-[11px] text-ios-gray">
+          {tgDebug}
+        </div>
+      )}
+
       {/* Logo */}
-      <div className="mb-8 text-center">
+      <div className="mb-8 text-center mt-12">
         <span className="text-[80px]">🚀</span>
         <h1 className="text-[32px] font-bold mt-4 mb-2">Life OS</h1>
         <p className="text-ios-gray text-[17px]">
@@ -101,10 +122,11 @@ function AuthPage() {
             <button
               onClick={() => {
                 const initData = telegramService.getInitData();
+                console.log('[AuthPage] Button clicked, initData:', initData ? 'Present' : 'null');
                 if (initData) {
                   handleTelegramAuth(initData);
                 } else {
-                  setError('Telegram initData not available. Try opening from Telegram.');
+                  setError('Telegram initData not available. Make sure you opened this app from Telegram.');
                 }
               }}
               disabled={isAuthenticating}

@@ -1,7 +1,5 @@
-import { WebApp as TelegramWebApp } from '@telegram-apps/sdk';
-
 class TelegramService {
-  private webApp: TelegramWebApp | null = null;
+  private webApp: any = null;
   private isInitialized = false;
 
   init() {
@@ -9,15 +7,28 @@ class TelegramService {
 
     const tg = (window as any).TelegramWebApp;
     
+    console.log('[Telegram] Window TelegramWebApp:', !!tg);
+    
     if (tg) {
       this.webApp = tg;
+      
+      // Ready signal
       this.webApp.ready();
+      
+      // Expand
       this.webApp.expand();
+      
+      console.log('[Telegram] Initialized');
+      console.log('[Telegram] initData:', this.webApp.initData ? 'Present (' + this.webApp.initData.length + ' chars)' : 'Not present');
+      console.log('[Telegram] initDataUnsafe:', this.webApp.initDataUnsafe);
+      console.log('[Telegram] themeParams:', this.webApp.themeParams);
       
       // Настраиваем цвета под тему Telegram
       this.applyThemeColors();
       
       this.isInitialized = true;
+    } else {
+      console.warn('[Telegram] TelegramWebApp not found!');
     }
   }
 
@@ -36,7 +47,7 @@ class TelegramService {
     root.style.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color || '#1C1C1E');
   }
 
-  getWebApp(): TelegramWebApp | null {
+  getWebApp(): any {
     return this.webApp;
   }
 
@@ -50,12 +61,14 @@ class TelegramService {
   }
 
   getInitData(): string | null {
-    return this.webApp?.initData || null;
+    const data = this.webApp?.initData;
+    console.log('[Telegram] getInitData called, result:', data ? 'Present (' + data.length + ' chars)' : 'null');
+    return data || null;
   }
 
   isDarkMode(): boolean {
-    return this.webApp?.themeParams.bg_color === '#000000' || 
-           this.webApp?.themeParams.bg_color === '#17212b';
+    return this.webApp?.themeParams?.bg_color === '#000000' || 
+           this.webApp?.themeParams?.bg_color === '#17212b';
   }
 
   // Haptic feedback
