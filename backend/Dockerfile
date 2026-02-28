@@ -20,8 +20,8 @@ RUN npx prisma generate
 # Copy all source files
 COPY . .
 
-# Compile TypeScript
-RUN npm run compile
+# Build TypeScript
+RUN npm run build
 
 # Remove dev dependencies after build
 RUN npm prune --production
