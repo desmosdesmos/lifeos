@@ -1,7 +1,7 @@
-# Life OS Backend - Docker Image v10
+# Life OS Backend - Docker Image v11
 # Build: Node.js 18 + TypeScript + Prisma
 # Using Debian instead of Alpine for SSL compatibility
-# FORCE_REBUILD_20260301_v10
+# FORCE_REBUILD_20260301_v11
 FROM node:18-slim
 
 WORKDIR /app
@@ -14,10 +14,9 @@ COPY package.json ./
 COPY package-lock.json* ./
 RUN npm install
 
-# Copy Prisma schema and generate client + push schema
+# Copy Prisma schema and generate client (NO db push in build!)
 COPY prisma/ ./prisma/
 RUN npx prisma generate
-RUN npx prisma db push --accept-data-loss
 
 # Copy all source files
 COPY . .
@@ -35,5 +34,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Start script that applies schema and starts server
+# Start script that applies schema and starts server (DATABASE_URL available at runtime!)
 CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node dist/index.js"]
