@@ -1,4 +1,4 @@
-# Life OS Backend - Docker Image v6
+# Life OS Backend - Docker Image v7
 # Build: Node.js 18 + TypeScript + Prisma
 # Using Debian instead of Alpine for SSL compatibility
 FROM node:18-slim
@@ -13,9 +13,10 @@ COPY package.json ./
 COPY package-lock.json* ./
 RUN npm install
 
-# Copy Prisma schema and generate client
+# Copy Prisma schema and generate client + apply migrations
 COPY prisma/ ./prisma/
 RUN npx prisma generate
+RUN npx prisma migrate deploy
 
 # Copy all source files
 COPY . .
