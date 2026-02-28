@@ -8,14 +8,14 @@
     "db:push": "prisma db push"
   },
   "dependencies": {
-    "@prisma/client": "^5.10.0",
+    "@prisma/client": "5.10.0",
     "jsonwebtoken": "^9.0.2",
     "vercel": "^33.0.0"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.11.24",
-    "prisma": "^5.10.0",
+    "prisma": "5.10.0",
     "typescript": "^5.3.3"
   }
 }
