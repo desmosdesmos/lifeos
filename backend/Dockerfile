@@ -1,6 +1,7 @@
-# Life OS Backend - Docker Image v8
+# Life OS Backend - Docker Image v9
 # Build: Node.js 18 + TypeScript + Prisma
 # Using Debian instead of Alpine for SSL compatibility
+# FORCE_REBUILD_20260301_v9
 FROM node:18-slim
 
 WORKDIR /app
