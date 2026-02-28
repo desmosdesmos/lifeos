@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header, TabBar } from '@/components/navigation';
 import {
   SleepTracker,
@@ -6,7 +6,6 @@ import {
   MoodTracker,
   WorkoutTracker,
   FinanceTracker,
-  SphereTracker,
 } from '@/components/tracking';
 import { Button, Card, LoadingSpinner } from '@/components/ui';
 import { useMetrics } from '@/hooks';

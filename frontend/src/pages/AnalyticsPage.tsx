@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header, TabBar } from '@/components/navigation';
-import { Card, Button, LoadingSpinner, EmptyState, WheelChart } from '@/components/ui';
-import { LifeScoreRing, RecommendationCard } from '@/components/dashboard';
+import { Card, Button, LoadingSpinner, EmptyState } from '@/components/ui';
+import { LifeScoreRing, RecommendationCard, WheelChart } from '@/components/dashboard';
 import { useNavigate } from 'react-router-dom';
 import apiService from '@/services/api';
 
@@ -13,7 +13,8 @@ interface Correlation {
 
 interface ProgressData {
   date: string;
-  value: number;
+  score?: number;
+  value?: number;
 }
 
 export function AnalyticsPage() {
@@ -147,7 +148,7 @@ export function AnalyticsPage() {
                 <div
                   key={index}
                   className="flex-1 bg-ios-primary/20 rounded-t transition-all hover:bg-ios-primary/40"
-                  style={{ height: `${point.score}%` }}
+                  style={{ height: `${point.score || 0}%` }}
                   title={`${point.date}: ${point.score}`}
                 />
               ))}

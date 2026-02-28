@@ -153,10 +153,9 @@ function AuthPage() {
 
 // Защищённый роут
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAppStore();
   const token = localStorage.getItem('token');
 
-  if (!isAuthenticated && !token) {
+  if (!token) {
     return <Navigate to="/auth" replace />;
   }
 
@@ -165,14 +164,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 // Главный компонент приложения
 function App() {
-  const { isAuthenticated, setUser, setToken } = useAppStore();
+  const { setToken } = useAppStore();
 
   useEffect(() => {
     // Проверяем токен при загрузке
     const token = localStorage.getItem('token');
     if (token) {
-      // Здесь можно сделать запрос к API для валидации токена
-      // и получения данных пользователя
       setToken(token);
     }
 

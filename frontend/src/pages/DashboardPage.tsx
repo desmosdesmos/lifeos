@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header, TabBar } from '@/components/navigation';
 import { LifeScoreRing, SphereCard, RecommendationCard, WheelChart } from '@/components/dashboard';
 import { LoadingSpinner, EmptyState, Button } from '@/components/ui';
-import { useDashboard, useAuth } from '@/hooks';
+import { useDashboard } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardPage() {
   const navigate = useNavigate();
   const { dashboard, loading, fetchDashboard } = useDashboard();
-  const { logout } = useAuth();
 
   useEffect(() => {
     fetchDashboard();
@@ -57,7 +56,7 @@ export function DashboardPage() {
         })}
         rightAction={
           <button
-            onClick={logout}
+            onClick={() => navigate('/analytics')}
             className="text-[24px] active:opacity-70"
           >
             ⚙️

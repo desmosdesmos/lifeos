@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { SphereIcon, Slider, Button, Card, Input } from '@/components/ui';
+import { useState } from 'react';
+import { SphereIcon, Slider, Button, Card } from '@/components/ui';
 import { SphereType } from '@/types';
 
 interface SphereTrackerProps {
   sphere: SphereType;
-  icon: string;
   title: string;
   value: number | string;
   unit: string;
@@ -17,7 +16,6 @@ interface SphereTrackerProps {
 
 export function SphereTracker({
   sphere,
-  icon,
   title,
   value,
   unit,
@@ -240,9 +238,6 @@ export function FinanceTracker({
   onExpensesChange,
   className,
 }: FinanceTrackerProps) {
-  const [incomeInput, setIncomeInput] = useState(income.toString());
-  const [expensesInput, setExpensesInput] = useState(expenses.toString());
-
   const balance = income - expenses;
 
   return (
@@ -263,22 +258,13 @@ export function FinanceTracker({
           <label className="block text-ios-gray text-[13px] mb-1.5 ml-1">
             Доход
           </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={incomeInput}
-              onChange={(e) => setIncomeInput(e.target.value)}
-              onBlur={() => onIncomeChange(Number(incomeInput) || 0)}
-              className="flex-1 bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white focus:outline-none"
-              placeholder="0"
-            />
-            <Button
-              variant="secondary"
-              onClick={() => onIncomeChange(Number(incomeInput) || 0)}
-            >
-              ✓
-            </Button>
-          </div>
+          <input
+            type="number"
+            value={income || ''}
+            onChange={(e) => onIncomeChange(Number(e.target.value) || 0)}
+            className="w-full bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white focus:outline-none"
+            placeholder="0"
+          />
         </div>
 
         {/* Expenses */}
@@ -286,22 +272,13 @@ export function FinanceTracker({
           <label className="block text-ios-gray text-[13px] mb-1.5 ml-1">
             Расход
           </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={expensesInput}
-              onChange={(e) => setExpensesInput(e.target.value)}
-              onBlur={() => onExpensesChange(Number(expensesInput) || 0)}
-              className="flex-1 bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white focus:outline-none"
-              placeholder="0"
-            />
-            <Button
-              variant="secondary"
-              onClick={() => onExpensesChange(Number(expensesInput) || 0)}
-            >
-              ✓
-            </Button>
-          </div>
+          <input
+            type="number"
+            value={expenses || ''}
+            onChange={(e) => onExpensesChange(Number(e.target.value) || 0)}
+            className="w-full bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white focus:outline-none"
+            placeholder="0"
+          />
         </div>
       </div>
     </Card>

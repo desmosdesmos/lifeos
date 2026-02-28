@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header, TabBar, Modal } from '@/components/navigation';
-import { Button, Card, Input, ProgressBar, LoadingSpinner, EmptyState, SphereIcon } from '@/components/ui';
+import { Button, Card, Input, ProgressBar, LoadingSpinner, EmptyState } from '@/components/ui';
 import { useGoals } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Goal, SphereType } from '@/types';
 
 export function GoalsPage() {
   const navigate = useNavigate();
-  const { goals, loading, fetchGoals, createGoal, updateGoalProgress, deleteGoal } = useGoals();
+  const { goals, loading, fetchGoals, createGoal, updateGoalProgress } = useGoals();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 

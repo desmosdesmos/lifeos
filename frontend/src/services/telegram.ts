@@ -1,9 +1,7 @@
-/// <reference types="telegram-web-app-types" />
-
-import { WebApp } from '@telegram-apps/sdk';
+import { WebApp as TelegramWebApp } from '@telegram-apps/sdk';
 
 class TelegramService {
-  private webApp: WebApp | null = null;
+  private webApp: TelegramWebApp | null = null;
   private isInitialized = false;
 
   init() {
@@ -38,7 +36,7 @@ class TelegramService {
     root.style.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color || '#1C1C1E');
   }
 
-  getWebApp(): WebApp | null {
+  getWebApp(): TelegramWebApp | null {
     return this.webApp;
   }
 

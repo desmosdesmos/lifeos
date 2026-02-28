@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Header, TabBar, Modal, ActionSheet } from '@/components/navigation';
-import { Button, Card, Input, LoadingSpinner, EmptyState, Toggle } from '@/components/ui';
+import { Button, Card, Input, LoadingSpinner, EmptyState } from '@/components/ui';
 import { useTasks } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 import { Task, TaskCategory, Priority } from '@/types';
