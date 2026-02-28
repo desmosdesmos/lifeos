@@ -1,5 +1,6 @@
-# Life OS Backend - Docker Image v3
+# Life OS Backend - Docker Image v4 CACHE_BUST_20260301
 # Build: Node.js 18 + TypeScript + Prisma
+# Updated: March 1, 2026
 FROM node:18-alpine
 
 WORKDIR /app
@@ -16,7 +17,7 @@ RUN npx prisma generate
 # Copy all source files
 COPY . .
 
-# Compile TypeScript using new script name
+# Compile TypeScript
 RUN npm run compile
 
 # Remove dev dependencies after build
