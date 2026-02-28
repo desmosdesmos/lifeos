@@ -5,25 +5,37 @@ class TelegramService {
   init() {
     if (this.isInitialized) return this.webApp;
 
-    console.log('[Telegram] Init called, window.TelegramWebApp:', !!(window as any).TelegramWebApp);
+    // Проверяем несколько возможных мест где Telegram может быть
+    const tg = (window as any).TelegramWebApp || 
+               (window as any).Telegram || 
+               (window as any).TelegramWebview ||
+               (window as any).TelegramWebviewProxy;
     
-    const tg = (window as any).TelegramWebApp;
+    console.log('[Telegram] Init called');
+    console.log('[Telegram] TelegramWebApp:', !!(window as any).TelegramWebApp);
+    console.log('[Telegram] Telegram:', !!(window as any).Telegram);
+    console.log('[Telegram] window keys:', Object.keys(window).filter(k => k.toLowerCase().includes('telegram')));
     
     if (tg) {
       this.webApp = tg;
+      console.log('[Telegram] Found Telegram object:', tg);
       
       // Ready signal
       try {
-        this.webApp.ready();
-        console.log('[Telegram] ready() called');
+        if (typeof this.webApp.ready === 'function') {
+          this.webApp.ready();
+          console.log('[Telegram] ready() called');
+        }
       } catch (e) {
         console.warn('[Telegram] ready() error:', e);
       }
       
       // Expand
       try {
-        this.webApp.expand();
-        console.log('[Telegram] expand() called');
+        if (typeof this.webApp.expand === 'function') {
+          this.webApp.expand();
+          console.log('[Telegram] expand() called');
+        }
       } catch (e) {
         console.warn('[Telegram] expand() error:', e);
       }
@@ -32,15 +44,15 @@ class TelegramService {
       console.log('[Telegram] initData:', this.webApp.initData ? this.webApp.initData.length + ' chars' : 'Not present');
       console.log('[Telegram] initDataUnsafe:', this.webApp.initDataUnsafe);
       console.log('[Telegram] themeParams:', this.webApp.themeParams);
-      console.log('[Telegram] version:', this.webApp.version);
       
-      // Настраиваем цвета под тему Telegram
+      // Настраиваем цвета
       this.applyThemeColors();
       
       this.isInitialized = true;
     } else {
       console.error('[Telegram] TelegramWebApp NOT FOUND!');
-      console.error('[Telegram] Are you opening this app from Telegram?');
+      console.error('[Telegram] Opening from browser instead of Telegram?');
+      console.log('[Telegram] User Agent:', navigator.userAgent);
     }
     
     return this.webApp;
@@ -50,7 +62,7 @@ class TelegramService {
     if (!this.webApp) return;
 
     const root = document.documentElement;
-    const params = this.webApp.themeParams;
+    const params = this.webApp.themeParams || {};
 
     root.style.setProperty('--tg-theme-bg-color', params.bg_color || '#000000');
     root.style.setProperty('--tg-theme-text-color', params.text_color || '#FFFFFF');
@@ -63,7 +75,6 @@ class TelegramService {
 
   getWebApp(): any {
     if (!this.webApp) {
-      console.warn('[Telegram] getWebApp called before init()');
       return this.init();
     }
     return this.webApp;
@@ -80,7 +91,6 @@ class TelegramService {
 
   getInitData(): string | null {
     if (!this.webApp) {
-      console.warn('[Telegram] getInitData called before init()');
       this.init();
     }
     const data = this.webApp?.initData;
@@ -93,7 +103,6 @@ class TelegramService {
            this.webApp?.themeParams?.bg_color === '#17212b';
   }
 
-  // Haptic feedback
   haptic(style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' | 'error' | 'success' | 'warning') {
     if (!this.webApp?.HapticFeedback) {
       console.warn('[Telegram] HapticFeedback not available');
@@ -128,13 +137,11 @@ class TelegramService {
     }
   }
 
-  // Показывать/скрывать главную кнопку
   showMainButton(text: string, onClick: () => void) {
     if (!this.webApp?.MainButton) {
       console.warn('[Telegram] MainButton not available');
       return;
     }
-
     this.webApp.MainButton.setText(text);
     this.webApp.MainButton.onClick(onClick);
     this.webApp.MainButton.show();
@@ -145,10 +152,8 @@ class TelegramService {
     this.webApp.MainButton.hide();
   }
 
-  // Показывать/скрывать кнопку назад
   showBackButton(onClick: () => void) {
     if (!this.webApp?.BackButton) return;
-
     this.webApp.BackButton.onClick(onClick);
     this.webApp.BackButton.show();
   }
@@ -158,17 +163,14 @@ class TelegramService {
     this.webApp.BackButton.hide();
   }
 
-  // Закрыть Web App
   close() {
     this.webApp?.close();
   }
 
-  // Показать попап
   showAlert(message: string, callback?: () => void) {
     this.webApp?.showAlert(message, callback);
   }
 
-  // Показать подтверждение
   showConfirm(message: string, callback: (confirmed: boolean) => void) {
     this.webApp?.showConfirm(message, callback);
   }

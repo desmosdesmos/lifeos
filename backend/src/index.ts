@@ -24,10 +24,12 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
-// CORS
+// CORS - разрешаем все origins для Telegram Web App
 app.use(cors({
-  origin: [config.telegram.webAppUrl, 'https://web.telegram.org'],
+  origin: true, // Разрешаем все origins
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Парсинг JSON
