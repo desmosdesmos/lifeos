@@ -19,28 +19,38 @@ function AuthPage() {
   const { setUser, setToken } = useAppStore();
 
   useEffect(() => {
+    console.log('[AuthPage] Initializing Telegram...');
     telegramService.init();
+    
+    // Проверяем есть ли initData от Telegram
+    const initData = telegramService.getInitData();
+    console.log('[AuthPage] initData:', initData ? 'Present' : 'Not present');
+    
+    // Если initData есть, пробуем авторизоваться автоматически
+    if (initData) {
+      console.log('[AuthPage] Auto-authenticating with Telegram...');
+      handleTelegramAuth(initData);
+    }
   }, []);
 
-  const handleTelegramAuth = async () => {
+  const handleTelegramAuth = async (initData: string) => {
+    console.log('[AuthPage] Starting Telegram auth...');
     setIsAuthenticating(true);
     setError(null);
 
     try {
-      const initData = telegramService.getInitData();
-      
-      if (!initData) {
-        throw new Error('Telegram initData not available');
-      }
-
       const response = await apiService.authTelegram(initData);
+      console.log('[AuthPage] Auth response:', response);
       
       if (response.success) {
         setUser(response.user);
         setToken(response.token);
+        console.log('[AuthPage] Auth successful!');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to authenticate');
+      console.error('[AuthPage] Auth error:', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.details || 'Failed to authenticate';
+      setError(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg));
     } finally {
       setIsAuthenticating(false);
     }
@@ -89,7 +99,14 @@ function AuthPage() {
         {!devMode ? (
           <>
             <button
-              onClick={handleTelegramAuth}
+              onClick={() => {
+                const initData = telegramService.getInitData();
+                if (initData) {
+                  handleTelegramAuth(initData);
+                } else {
+                  setError('Telegram initData not available. Try opening from Telegram.');
+                }
+              }}
               disabled={isAuthenticating}
               className="w-full bg-ios-primary text-white font-semibold py-4 px-6 rounded-[14px] text-[17px] active:opacity-80 transition-opacity disabled:opacity-50"
             >

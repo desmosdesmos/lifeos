@@ -11,6 +11,7 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
+      timeout: 10000,
     });
 
     // Интерцептор для добавления токена
@@ -22,10 +23,17 @@ class ApiService {
       return config;
     });
 
+    // Интерцептор для логирования запросов
+    this.client.interceptors.request.use((config) => {
+      console.log('[API Request]', config.method?.toUpperCase(), config.url);
+      return config;
+    });
+
     // Интерцептор для обработки ошибок
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
+        console.error('[API Error]', error.response?.status, error.response?.data);
         if (error.response?.status === 401) {
           localStorage.removeItem('token');
           window.location.reload();
@@ -40,8 +48,15 @@ class ApiService {
   // ============================================
 
   async authTelegram(initData: string) {
-    const response = await this.client.post('/auth/telegram', { initData });
-    return response.data;
+    console.log('[Auth] Sending initData to backend');
+    try {
+      const response = await this.client.post('/auth/telegram', { initData });
+      console.log('[Auth] Success:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('[Auth] Error:', error.response?.data);
+      throw error;
+    }
   }
 
   async authDev(telegramId: string, username?: string, firstName?: string) {

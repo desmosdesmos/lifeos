@@ -3,15 +3,19 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '@/config';
 import { AuthRequest } from '@/types';
+import { logger } from '@/config/logger';
 
 /**
  * Проверка данных от Telegram WebApp
  * https://core.telegram.org/bots/webapps#validating-data-received-via-the-web-app
  */
 export function validateTelegramData(data: Record<string, string>, botToken: string): boolean {
+  logger.info('Validating Telegram data:', { hasData: !!data, hasBotToken: !!botToken });
+  
   const { hash, ...restData } = data;
   
   if (!hash) {
+    logger.error('No hash in Telegram data');
     return false;
   }
   
@@ -20,6 +24,8 @@ export function validateTelegramData(data: Record<string, string>, botToken: str
   const dataCheckString = sortedKeys
     .map(key => `${key}=${restData[key]}`)
     .join('\n');
+  
+  logger.info('Data check string:', dataCheckString.substring(0, 100) + '...');
   
   // Создаем ключ для HMAC
   const secretKey = crypto.createHash('sha256').update(botToken).digest();
@@ -30,7 +36,13 @@ export function validateTelegramData(data: Record<string, string>, botToken: str
     .update(dataCheckString)
     .digest('hex');
   
-  return computedHash === hash;
+  logger.info('Computed hash:', computedHash);
+  logger.info('Received hash:', hash);
+  
+  const isValid = computedHash === hash;
+  logger.info('Validation result:', isValid);
+  
+  return isValid;
 }
 
 /**
@@ -55,6 +67,7 @@ export function telegramAuth(req: Request, res: Response, next: NextFunction) {
       res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
   } catch (error) {
+    logger.error('Auth middleware error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }

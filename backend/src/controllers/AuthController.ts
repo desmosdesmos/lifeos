@@ -16,37 +16,49 @@ export class AuthController {
    */
   async authorizeTelegram(req: Request, res: Response) {
     try {
+      logger.info('=== Telegram Auth Request ===');
+      logger.info('Request body:', JSON.stringify(req.body, null, 2));
+      
       const { initData } = req.body;
 
       if (!initData) {
+        logger.error('No initData in request');
         res.status(400).json({ error: 'initData is required' });
         return;
       }
+
+      logger.info('InitData received, length:', initData.length);
 
       // Парсим initData от Telegram
       const params = new URLSearchParams(initData);
       const data: Record<string, string> = {};
       params.forEach((value, key) => {
         data[key] = value;
+        logger.info(`Param ${key}:`, value.substring(0, 50) + '...');
       });
 
       // Валидируем данные через Telegram Bot Token
+      logger.info('Bot token:', config.telegram.botToken.substring(0, 20) + '...');
       const isValid = validateTelegramData(data, config.telegram.botToken);
       
       if (!isValid) {
-        logger.warn('Invalid Telegram data received');
+        logger.error('Invalid Telegram data');
         res.status(401).json({ error: 'Invalid Telegram data' });
         return;
       }
 
+      logger.info('Telegram data validated successfully');
+
       // Получаем данные пользователя
       const userString = data.user;
       if (!userString) {
+        logger.error('No user data in Telegram initData');
         res.status(400).json({ error: 'User data not found' });
         return;
       }
 
       const userData = JSON.parse(decodeURIComponent(userString));
+      logger.info('User data:', userData);
 
       // Авторизуем/регистрируем пользователя
       const result = await authService.authorize({
@@ -58,15 +70,21 @@ export class AuthController {
       });
 
       logger.info(`User authorized: ${result.user.telegramId}`);
+      logger.info('=== Auth Success ===');
 
       res.json({
         success: true,
         user: result.user,
         token: result.token,
       });
-    } catch (error) {
-      logger.error('Telegram auth error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error: any) {
+      logger.error('=== Telegram Auth Error ===');
+      logger.error('Error:', error.message);
+      logger.error('Stack:', error.stack);
+      res.status(500).json({ 
+        error: 'Internal server error',
+        details: error.message 
+      });
     }
   }
 
@@ -140,8 +158,8 @@ export class AuthController {
 
       const result = await authService.authorize({
         id: telegramId.toString(),
-        username: username || 'test_user',
-        first_name: firstName || 'Test',
+        username: username || 'dev_user',
+        first_name: firstName || 'Dev',
         last_name: lastName || 'User',
         language_code: 'ru',
       });
