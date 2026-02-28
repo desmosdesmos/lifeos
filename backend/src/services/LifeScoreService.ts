@@ -162,9 +162,9 @@ export class LifeScoreService {
    * Среднее значение поля в массиве
    */
   private avg(arr: any[], field: string): number | null {
-    const values = arr.map(m => m[field]).filter(v => v !== null && v !== undefined);
+    const values = arr.map((m: any) => m[field]).filter((v: any) => v !== null && v !== undefined);
     if (values.length === 0) return null;
-    return values.reduce((a, b) => a + b, 0) / values.length;
+    return values.reduce((a: number, b: number) => a + b, 0) / values.length;
   }
 
   /**

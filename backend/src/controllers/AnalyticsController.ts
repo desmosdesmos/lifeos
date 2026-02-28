@@ -65,10 +65,10 @@ export class AnalyticsController {
       // Средние значения
       const avg = (field: string) => {
         const values = metrics
-          .map(m => m[field])
-          .filter(v => v !== null && v !== undefined && v > 0);
+          .map((m: any) => m[field as keyof typeof m])
+          .filter((v: any) => v !== null && v !== undefined && v > 0);
         if (values.length === 0) return 0;
-        return values.reduce((a, b) => a + b, 0) / values.length;
+        return values.reduce((a: number, b: number) => a + b, 0) / values.length;
       };
 
       const spheres = [
@@ -214,11 +214,11 @@ export class AnalyticsController {
     interpretation: string
   ): CorrelationData {
     const pairs = metrics
-      .map(m => ({
-        x: m[fieldX],
-        y: m[fieldY],
+      .map((m: any) => ({
+        x: m[fieldX as keyof typeof m],
+        y: m[fieldY as keyof typeof m],
       }))
-      .filter(p => p.x !== null && p.x !== undefined && p.y !== null && p.y !== undefined);
+      .filter((p: any) => p.x !== null && p.x !== undefined && p.y !== null && p.y !== undefined);
 
     if (pairs.length < 3) {
       return {
@@ -229,11 +229,11 @@ export class AnalyticsController {
     }
 
     const n = pairs.length;
-    const sumX = pairs.reduce((a, b) => a + b.x, 0);
-    const sumY = pairs.reduce((a, b) => a + b.y, 0);
-    const sumXY = pairs.reduce((a, b) => a + b.x * b.y, 0);
-    const sumX2 = pairs.reduce((a, b) => a + b.x * b.x, 0);
-    const sumY2 = pairs.reduce((a, b) => a + b.y * b.y, 0);
+    const sumX = pairs.reduce((a: number, b: any) => a + b.x, 0);
+    const sumY = pairs.reduce((a: number, b: any) => a + b.y, 0);
+    const sumXY = pairs.reduce((a: number, b: any) => a + b.x * b.y, 0);
+    const sumX2 = pairs.reduce((a: number, b: any) => a + b.x * b.x, 0);
+    const sumY2 = pairs.reduce((a: number, b: any) => a + b.y * b.y, 0);
 
     const numerator = n * sumXY - sumX * sumY;
     const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
@@ -286,9 +286,16 @@ export class AnalyticsController {
         take: parseInt(weeks as string, 10),
       });
 
+      // Конвертируем даты в строки
+      const formattedStats = stats.map(s => ({
+        ...s,
+        weekStart: s.weekStart.toISOString(),
+        weekEnd: s.weekEnd.toISOString(),
+      }));
+
       res.json({
         success: true,
-        stats: stats as WeeklyStatResponse[],
+        stats: formattedStats,
       });
     } catch (error) {
       logger.error('Get weekly stats error:', error);
@@ -353,24 +360,24 @@ export class AnalyticsController {
         // Одна сфера
         const field = fieldMap[sphere as string];
         if (field) {
-          progressData[sphere as string] = metrics.map(m => ({
+          progressData[sphere as string] = metrics.map((m: any) => ({
             date: new Date(m.date).toISOString().split('T')[0],
-            value: m[field] || 0,
+            value: m[field as keyof typeof m] || 0,
           }));
         }
       } else {
         // Все сферы (агрегированные)
         for (const [key, field] of Object.entries(fieldMap)) {
-          progressData[key] = metrics.map(m => ({
+          progressData[key] = metrics.map((m: any) => ({
             date: new Date(m.date).toISOString().split('T')[0],
-            value: m[field] || 0,
+            value: m[field as keyof typeof m] || 0,
           }));
         }
       }
 
       // LifeScore тренд
       const lifeScoreTrend = await Promise.all(
-        metrics.map(async (m) => {
+        metrics.map(async (m: any) => {
           const date = new Date(m.date);
           const nextDate = new Date(date);
           nextDate.setDate(nextDate.getDate() + 1);
@@ -480,7 +487,7 @@ export class AnalyticsController {
           },
           tasks: {
             pending: pendingTasks.length,
-            critical: pendingTasks.filter(t => t.priority === 'CRITICAL').length,
+            critical: pendingTasks.filter((t: any) => t.priority === 'CRITICAL').length,
           },
           wheel,
         },
@@ -529,10 +536,10 @@ export class AnalyticsController {
 
     const avg = (field: string) => {
       const values = metrics
-        .map(m => m[field])
-        .filter(v => v !== null && v !== undefined && v > 0);
+        .map((m: any) => m[field as keyof typeof m])
+        .filter((v: any) => v !== null && v !== undefined && v > 0);
       if (values.length === 0) return 0;
-      return values.reduce((a, b) => a + b, 0) / values.length;
+      return values.reduce((a: number, b: number) => a + b, 0) / values.length;
     };
 
     return {
@@ -555,7 +562,7 @@ export class AnalyticsController {
 
   /**
    * Экспорт отчёта
-   * GET /api/analytics/export?format=txt|json|csv&days=30
+   * GET /api/analytics/export
    */
   async exportReport(req: AuthRequest, res: Response) {
     try {

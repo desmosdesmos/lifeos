@@ -66,7 +66,7 @@ export class AuthService {
     const token = jwt.sign(
       { telegramId: telegramId.toString() },
       config.jwt.secret,
-      { expiresIn: config.jwt.expiresIn }
+      { expiresIn: config.jwt.expiresIn } as jwt.SignOptions
     );
     
     return {

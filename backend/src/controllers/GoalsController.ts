@@ -1,7 +1,8 @@
 import { Response } from 'express';
 import { prisma } from '@/config/database';
 import { logger } from '@/config/logger';
-import { AuthRequest, GoalInput, GoalResponse, SphereType } from '@/types';
+import { AuthRequest, GoalInput } from '@/types';
+import { SphereType } from '@prisma/client';
 
 /**
  * Goals Controller
@@ -46,9 +47,16 @@ export class GoalsController {
         orderBy: [{ status: 'asc' }, { endDate: 'asc' }],
       });
 
+      // Конвертируем даты в строки
+      const formattedGoals = goals.map(g => ({
+        ...g,
+        startDate: g.startDate.toISOString(),
+        endDate: g.endDate.toISOString(),
+      }));
+
       res.json({
         success: true,
-        goals: goals as GoalResponse[],
+        goals: formattedGoals,
       });
     } catch (error) {
       logger.error('Get goals error:', error);
@@ -93,7 +101,11 @@ export class GoalsController {
 
       res.json({
         success: true,
-        goal,
+        goal: {
+          ...goal,
+          startDate: goal.startDate.toISOString(),
+          endDate: goal.endDate.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Get goal error:', error);
@@ -158,7 +170,11 @@ export class GoalsController {
 
       res.json({
         success: true,
-        goal,
+        goal: {
+          ...goal,
+          startDate: goal.startDate.toISOString(),
+          endDate: goal.endDate.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Create goal error:', error);
@@ -224,7 +240,11 @@ export class GoalsController {
 
       res.json({
         success: true,
-        goal,
+        goal: {
+          ...goal,
+          startDate: goal.startDate.toISOString(),
+          endDate: goal.endDate.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Update goal error:', error);
@@ -287,7 +307,11 @@ export class GoalsController {
 
       res.json({
         success: true,
-        goal,
+        goal: {
+          ...goal,
+          startDate: goal.startDate.toISOString(),
+          endDate: goal.endDate.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Update progress error:', error);

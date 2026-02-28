@@ -1,7 +1,8 @@
 import { Response } from 'express';
 import { prisma } from '@/config/database';
 import { logger } from '@/config/logger';
-import { AuthRequest, TaskInput, TaskResponse } from '@/types';
+import { AuthRequest, TaskInput } from '@/types';
+import { TaskCategory, Priority, TaskStatus } from '@prisma/client';
 
 /**
  * Tasks Controller
@@ -104,7 +105,11 @@ export class TasksController {
 
       res.json({
         success: true,
-        task,
+        task: {
+          ...task,
+          dueDate: task.dueDate?.toISOString(),
+          completedAt: task.completedAt?.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Get task error:', error);
@@ -140,8 +145,8 @@ export class TasksController {
           userId: user.id,
           title: data.title,
           description: data.description,
-          category: data.category,
-          priority: data.priority,
+          category: data.category as TaskCategory,
+          priority: data.priority as Priority,
           dueDate: data.dueDate ? new Date(data.dueDate) : null,
           isRecurring: data.isRecurring || false,
           recurrencePattern: data.recurrencePattern,
@@ -161,7 +166,11 @@ export class TasksController {
 
       res.json({
         success: true,
-        task,
+        task: {
+          ...task,
+          dueDate: task.dueDate?.toISOString(),
+          completedAt: task.completedAt?.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Create task error:', error);
@@ -218,7 +227,11 @@ export class TasksController {
 
       res.json({
         success: true,
-        task,
+        task: {
+          ...task,
+          dueDate: task.dueDate?.toISOString(),
+          completedAt: task.completedAt?.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Update task error:', error);
@@ -265,7 +278,7 @@ export class TasksController {
       const task = await prisma.task.update({
         where: { id: existing.id },
         data: {
-          status,
+          status: status as TaskStatus,
           completedAt: status === 'COMPLETED' ? new Date() : null,
         },
         include: { checklist: true },
@@ -273,7 +286,11 @@ export class TasksController {
 
       res.json({
         success: true,
-        task,
+        task: {
+          ...task,
+          dueDate: task.dueDate?.toISOString(),
+          completedAt: task.completedAt?.toISOString(),
+        },
       });
     } catch (error) {
       logger.error('Update status error:', error);

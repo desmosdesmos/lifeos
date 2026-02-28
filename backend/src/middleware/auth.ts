@@ -62,7 +62,7 @@ export function telegramAuth(req: Request, res: Response, next: NextFunction) {
 /**
  * Middleware для опциональной авторизации
  */
-export function optionalAuth(req: Request, res: Response, next: NextFunction) {
+export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   
   if (authHeader && authHeader.startsWith('Bearer ')) {
