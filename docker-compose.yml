@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: life-os-db
+    environment:
+      POSTGRES_USER: lifeos
+      POSTGRES_PASSWORD: lifeos123
+      POSTGRES_DB: life_os
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lifeos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - life-os
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: life-os-backend
+    environment:
+      DATABASE_URL: postgresql://lifeos:lifeos123@postgres:5432/life_os?schema=public
+      JWT_SECRET: dev-secret-change-in-production
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      WEB_APP_URL: http://localhost:5173
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - life-os
+    command: sh -c "npx prisma migrate dev && npm run dev"
+
+  # Frontend (опционально, можно запускать локально)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: life-os-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - life-os
+    command: npm run dev
+
+networks:
+  life-os:
+    driver: bridge
+
+volumes:
+  postgres_data:

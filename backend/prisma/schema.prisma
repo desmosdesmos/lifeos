@@ -1,0 +1,289 @@
+// Schema для Life Operating System
+// PostgreSQL база данных
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USERS - Пользователи
+// ============================================
+model User {
+  id              Int      @id @default(autoincrement())
+  telegramId      BigInt   @unique
+  username        String?
+  firstName       String?
+  lastName        String?
+  languageCode    String   @default("ru")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Настройки весов сфер жизни (для персонализации LifeScore)
+  sphereWeights   SphereWeights?
+  
+  // Связи
+  dailyMetrics    DailyMetric[]
+  goals           Goal[]
+  tasks           Task[]
+  weeklyStats     WeeklyStat[]
+  
+  @@index([telegramId])
+}
+
+// ============================================
+// SPHERE WEIGHTS - Веса сфер для LifeScore
+// ============================================
+model SphereWeights {
+  id              Int     @id @default(autoincrement())
+  userId          Int     @unique
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Веса сфер (0-100, сумма должна быть ~100)
+  sleep           Float   @default(15.0)
+  water           Float   @default(10.0)
+  nutrition       Float   @default(10.0)
+  fitness         Float   @default(15.0)
+  work            Float   @default(15.0)
+  finance         Float   @default(15.0)
+  mood            Float   @default(10.0)
+  selfDevelopment Float   @default(5.0)
+  personalLife    Float   @default(5.0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ============================================
+// DAILY METRICS - Ежедневные метрики
+// ============================================
+model DailyMetric {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date            DateTime @db.Date
+  
+  // Сон
+  sleepHours      Float?   // Часы сна
+  
+  // Вода
+  waterMl         Int      @default(0)  // мл воды
+  
+  // Питание
+  calories        Int?     // Калории
+  proteinGrams    Float?   // Белки (г)
+  
+  // Спорт
+  workoutType     String?  // Тип тренировки
+  workoutMinutes  Int      @default(0)
+  
+  // Работа
+  workHours       Float?   // Часы работы
+  
+  // Финансы
+  income          Float    @default(0)  // Доход
+  expenses        Float    @default(0)  // Расход
+  
+  // Настроение
+  mood            Int?     // 1-10
+  
+  // Саморазвитие
+  selfDevMinutes  Int      @default(0)
+  
+  // Личная жизнь
+  personalLifeScore Int?   // 1-10
+  
+  // Заметки
+  notes           String?  @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+// ============================================
+// GOALS - Цели
+// ============================================
+model Goal {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?  @db.Text
+  sphere          SphereType
+  
+  // Параметры цели
+  targetValue     Float    // Целевое значение
+  currentValue    Float    @default(0)  // Текущее значение
+  unit            String   // Единица измерения
+  
+  // Период
+  startDate       DateTime
+  endDate         DateTime
+  
+  // Статус
+  status          GoalStatus @default(ACTIVE)
+  progress        Float    @default(0)  // Процент выполнения
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId, status])
+}
+
+enum SphereType {
+  SLEEP
+  WATER
+  NUTRITION
+  FITNESS
+  WORK
+  FINANCE
+  MOOD
+  SELF_DEVELOPMENT
+  PERSONAL_LIFE
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+// ============================================
+// TASKS - Задачи
+// ============================================
+model Task {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title           String
+  description     String?  @db.Text
+  
+  // Категория и приоритет
+  category        TaskCategory
+  priority        Priority @default(MEDIUM)
+  
+  // Статус
+  status          TaskStatus @default(PENDING)
+  
+  // Чек-лист
+  checklist       ChecklistItem[]
+  
+  // Время
+  dueDate         DateTime?
+  completedAt     DateTime?
+  
+  // Повторение
+  isRecurring     Boolean  @default(false)
+  recurrencePattern String? // daily, weekly, monthly
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId, status])
+  @@index([userId, dueDate])
+}
+
+enum TaskCategory {
+  HEALTH
+  WORK
+  FINANCE
+  LEARNING
+  PERSONAL
+  OTHER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model ChecklistItem {
+  id          Int     @id @default(autoincrement())
+  taskId      Int
+  task        Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  text        String
+  isCompleted Boolean @default(false)
+  
+  @@index([taskId])
+}
+
+// ============================================
+// WEEKLY STATS - Недельная статистика
+// ============================================
+model WeeklyStat {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  weekStart       DateTime @db.Date  // Начало недели (понедельник)
+  weekEnd         DateTime @db.Date  // Конец недели (воскресенье)
+  
+  // Агрегированные метрики
+  avgSleepHours   Float?
+  totalWaterMl    Int      @default(0)
+  avgCalories     Int?
+  totalWorkoutMinutes Int @default(0)
+  avgWorkHours    Float?
+  totalIncome     Float    @default(0)
+  totalExpenses   Float    @default(0)
+  avgMood         Float?
+  totalSelfDevMinutes Int @default(0)
+  avgPersonalLifeScore Float?
+  
+  // LifeScore за неделю
+  lifeScore       Float    @default(0)
+  
+  // Динамика
+  lifeScoreChange Float    @default(0)  // Изменение к прошлой неделе
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, weekStart])
+  @@index([userId, weekStart])
+}
+
+// ============================================
+// RULE ENGINE LOGS - Логи рекомендаций
+// ============================================
+model RuleEngineLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  date        DateTime @db.Date
+  
+  ruleId      String   // ID сработавшего правила
+  ruleName    String
+  severity    RuleSeverity
+  message     String   @db.Text
+  sphere      SphereType
+  isResolved  Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId, date])
+}
+
+enum RuleSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}

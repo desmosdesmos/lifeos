@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+.DS_Store
+coverage
+.vscode
+.idea
+*.swp
+*.swo
+prisma/migrations
+frontend/dist
+backend/node_modules
+frontend/node_modules
