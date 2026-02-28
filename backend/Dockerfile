@@ -1,5 +1,5 @@
-# Life OS Backend - Docker Image v16
-# FORCE_REBUILD_20260301_v16_EXPLICIT_MIGRATIONS
+# Life OS Backend - Docker Image v17
+# FORCE_REBUILD_20260301_v17_NPM_START_PROD
 FROM node:18-slim
 
 WORKDIR /app
@@ -28,5 +28,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Explicitly run migrations then start server
-CMD sh -c "echo '=== RUNNING MIGRATIONS ===' && npx prisma db push --accept-data-loss --schema=./prisma/schema.prisma && echo '=== MIGRATIONS COMPLETE ===' && node dist/index.js"
+# Use npm run start:prod which runs migrations first
+CMD ["npm", "run", "start:prod"]
