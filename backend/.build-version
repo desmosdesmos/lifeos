@@ -1,0 +1,5 @@
+# Build Cache Buster
+# This file exists to force Railway to rebuild the Docker image
+# Updated: 2026-03-01T00:00:00Z
+BUILD_VERSION=4
+TIMESTAMP=20260301000000

@@ -1,9 +1,13 @@
-# Life OS Backend - Docker Image v4 CACHE_BUST_20260301
+# Life OS Backend - Docker Image v5
 # Build: Node.js 18 + TypeScript + Prisma
-# Updated: March 1, 2026
+# Updated: March 1, 2026 - FORCE REBUILD
 FROM node:18-alpine
 
 WORKDIR /app
+
+# Build version file (cache buster)
+COPY .build-version ./
+ARG BUILD_VERSION=4
 
 # Install ALL dependencies (dev + prod for build)
 COPY package.json ./
