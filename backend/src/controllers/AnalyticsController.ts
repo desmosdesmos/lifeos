@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { prisma } from '@/config/database';
 import { logger } from '@/config/logger';
-import { AuthRequest, LifeBalanceWheel, CorrelationData, WeeklyStatResponse } from '@/types';
+import { AuthRequest, LifeBalanceWheel, CorrelationData } from '@/types';
 import { lifeScoreService } from '@/services/LifeScoreService';
 import { ruleEngineService } from '@/services/RuleEngineService';
 import { reportGeneratorService } from '@/services/ReportGeneratorService';

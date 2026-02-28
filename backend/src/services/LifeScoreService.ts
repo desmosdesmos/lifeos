@@ -104,7 +104,6 @@ export class LifeScoreService {
    * Расчёт scores по каждой сфере
    */
   private calculateSphereScores(metrics: any[]): Record<string, number> {
-    const count = metrics.length;
     const configs = this.sphereConfigs;
 
     // Агрегируем данные
