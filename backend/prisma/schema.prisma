@@ -261,29 +261,3 @@ model WeeklyStat {
   @@unique([userId, weekStart])
   @@index([userId, weekStart])
 }
-
-// ============================================
-// RULE ENGINE LOGS - Логи рекомендаций
-// ============================================
-model RuleEngineLog {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  date        DateTime @db.Date
-  
-  ruleId      String   // ID сработавшего правила
-  ruleName    String
-  severity    RuleSeverity
-  message     String   @db.Text
-  sphere      SphereType
-  isResolved  Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  
-  @@index([userId, date])
-}
-
-enum RuleSeverity {
-  INFO
-  WARNING
-  CRITICAL
-}
