@@ -24,7 +24,7 @@
   "env": {
     "NODE_ENV": "production",
     "TELEGRAM_BOT_TOKEN": "8771751252:AAF19pl3mtDEqyy-Srg74qwiSJndh_CWB10",
-    "DATABASE_URL": "postgresql://neondb_owner:npg_4MAsTRNjaiI1@ep-lucky-art-aind5ntw-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "DATABASE_URL": "postgresql://neondb_owner:npg_TVM9HpCA4KFX@ep-flat-voice-airgnvgh-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
     "JWT_SECRET": "life-os-super-secret-jwt-key-change-in-production-2026"
   }
 }
