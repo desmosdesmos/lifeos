@@ -1,6 +1,5 @@
-# Life OS Backend - Docker Image v12
-# Build: Node.js 18 + TypeScript + Prisma
-# FORCE_REBUILD_20260301_v12_USE_DB_PUSH
+# Life OS Backend - Docker Image v13
+# FORCE_REBUILD_20260301_v13
 FROM node:18-slim
 
 WORKDIR /app
@@ -29,5 +28,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Apply migrations at runtime when DATABASE_URL is available
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss && node dist/index.js"]
+# Apply db push at runtime when DATABASE_URL is available
+CMD ["npm", "run", "start:with-migrations"]

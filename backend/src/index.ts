@@ -14,8 +14,8 @@ import analyticsRoutes from '@/routes/analytics';
 
 const app = express();
 
-// Trust proxy for rate limiting behind Railway
-app.set('trust proxy', true);
+// Trust proxy for rate limiting behind Railway (disable to avoid warning)
+// app.set('trust proxy', true);
 
 // ============================================
 // MIDDLEWARE
@@ -34,6 +34,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Rate limiting with disabled trust proxy
+const limiter = rateLimit({
+  windowMs: config.rateLimit.windowMs,
+  max: config.rateLimit.maxRequests,
+  message: { error: 'Too many requests, please try again later' },
+  validate: { trustProxy: false },
+});
+app.use('/api/', limiter);
 
 // Парсинг JSON
 app.use(express.json({ limit: '10mb' }));
