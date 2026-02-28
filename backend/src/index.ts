@@ -14,6 +14,9 @@ import analyticsRoutes from '@/routes/analytics';
 
 const app = express();
 
+// Trust proxy for rate limiting behind Railway
+app.set('trust proxy', true);
+
 // ============================================
 // MIDDLEWARE
 // ============================================
