@@ -1,22 +1,27 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Header, TabBar } from '@/components/navigation';
 import { LifeScoreRing, SphereCard, RecommendationCard, WheelChart } from '@/components/dashboard';
-import { LoadingSpinner, EmptyState, Button } from '@/components/ui';
+import { LoadingSpinner, EmptyState, Button, Card } from '@/components/ui';
 import { useDashboard } from '@/hooks';
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardPage() {
   const navigate = useNavigate();
   const { dashboard, loading, fetchDashboard } = useDashboard();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetchDashboard();
   }, []);
 
   if (loading && !dashboard) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <div className="text-center">
+          <div className="ios-spinner mx-auto mb-4"></div>
+          <p className="text-ios-gray">Загрузка Life OS...</p>
+        </div>
       </div>
     );
   }
@@ -57,7 +62,7 @@ export function DashboardPage() {
         rightAction={
           <button
             onClick={() => navigate('/analytics')}
-            className="text-[24px] active:opacity-70"
+            className="text-[24px] active:opacity-70 transition-opacity"
           >
             ⚙️
           </button>
@@ -65,22 +70,42 @@ export function DashboardPage() {
       />
 
       <main className="px-4 py-4 space-y-4">
-        {/* LifeScore */}
-        <div className="ios-card-large flex flex-col items-center">
-          <LifeScoreRing
-            score={dashboard?.lifeScore || 0}
-            size="xl"
-            showLabel
-          />
-          <p className="text-ios-gray text-[15px] mt-4 text-center">
-            Ваш общий показатель качества жизни
-          </p>
+        {/* LifeScore Hero Card */}
+        <div className={`ios-card-large bg-gradient-blue glow-blue animate-fade-in-up ${mounted ? '' : 'opacity-0'}`}>
+          <div className="flex flex-col items-center">
+            <LifeScoreRing score={dashboard?.lifeScore || 0} size="xl" showLabel />
+            <p className="text-ios-gray-light text-[15px] mt-4 text-center">
+              Ваш показатель качества жизни
+            </p>
+            <div className="flex gap-2 mt-4">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => navigate('/tracking')}
+                className="ios-button-gradient"
+              >
+                📊 Трекинг
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => navigate('/goals')}
+              >
+                🎯 Цели
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Recommendations */}
         {dashboard?.recommendations && dashboard.recommendations.length > 0 && (
-          <div>
-            <h2 className="text-[20px] font-semibold mb-3">Рекомендации</h2>
+          <div className="animate-fade-in-up delay-200">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-[20px] font-bold text-gradient">Рекомендации</h2>
+              <span className="ios-badge ios-badge-red">
+                {dashboard.recommendations.length}
+              </span>
+            </div>
             <div className="space-y-3">
               {dashboard.recommendations.slice(0, 3).map((rec, index) => (
                 <RecommendationCard
@@ -89,6 +114,7 @@ export function DashboardPage() {
                   title={rec.ruleName}
                   message={rec.message}
                   suggestion={rec.suggestion}
+                  className={`delay-${(index + 1) * 100}`}
                 />
               ))}
             </div>
@@ -96,11 +122,11 @@ export function DashboardPage() {
         )}
 
         {/* Sphere Statuses */}
-        <div>
-          <h2 className="text-[20px] font-semibold mb-3">Сферы жизни</h2>
+        <div className="animate-fade-in-up delay-300">
+          <h2 className="text-[20px] font-bold mb-3 text-gradient-green">Сферы жизни</h2>
           <div className="grid gap-3">
             {dashboard?.sphereStatuses &&
-              Object.entries(dashboard.sphereStatuses).map(([key, status]) => (
+              Object.entries(dashboard.sphereStatuses).map(([key, status], index) => (
                 <SphereCard
                   key={key}
                   name={sphereNames[key] || key}
@@ -109,6 +135,7 @@ export function DashboardPage() {
                   target={status.target}
                   status={status.status}
                   onClick={() => navigate('/tracking')}
+                  className={`animate-slide-in-right delay-${300 + index * 100}`}
                 />
               ))}
           </div>
@@ -116,9 +143,9 @@ export function DashboardPage() {
 
         {/* Wheel Chart */}
         {dashboard?.wheel && (
-          <div className="ios-card-large">
-            <h3 className="text-[18px] font-semibold mb-4 text-center">
-              Колесо баланса
+          <div className="ios-card-large animate-fade-in-up delay-500">
+            <h3 className="text-[18px] font-bold mb-4 text-center text-gradient-gold">
+              🎡 Колесо баланса
             </h3>
             <WheelChart data={dashboard.wheel.spheres} size={250} />
           </div>
@@ -126,34 +153,33 @@ export function DashboardPage() {
 
         {/* Goals Summary */}
         {dashboard?.goals && (
-          <div className="ios-card">
+          <div className="ios-card animate-fade-in-up delay-600">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-[17px] font-semibold">Цели</h3>
+              <h3 className="text-[17px] font-semibold">🎯 Цели</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/goals')}
+                className="text-ios-blue"
               >
                 Все →
               </Button>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <p className="text-[24px] font-bold text-ios-primary">
-                  {dashboard.goals.total}
-                </p>
+                <p className="text-[28px] font-bold text-gradient">{dashboard.goals.total}</p>
                 <p className="text-[12px] text-ios-gray">активных</p>
               </div>
               <div className="flex-1">
                 <div className="flex justify-between text-[13px] mb-1">
                   <span className="text-ios-gray">Прогресс</span>
-                  <span className="font-medium">
+                  <span className="font-semibold text-ios-blue">
                     {Math.round(dashboard.goals.avgProgress)}%
                   </span>
                 </div>
-                <div className="w-full h-2 bg-ios-card-secondary rounded-full overflow-hidden">
+                <div className="w-full h-3 bg-ios-card-secondary rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-ios-primary rounded-full"
+                    className="h-full bg-gradient-blue rounded-full transition-all duration-500"
                     style={{ width: `${dashboard.goals.avgProgress}%` }}
                   />
                 </div>
@@ -164,29 +190,26 @@ export function DashboardPage() {
 
         {/* Tasks Summary */}
         {dashboard?.tasks && (
-          <div className="ios-card">
+          <div className="ios-card animate-fade-in-up delay-700">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-[17px] font-semibold">Задачи</h3>
+              <h3 className="text-[17px] font-semibold">✅ Задачи</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/tasks')}
+                className="text-ios-blue"
               >
                 Все →
               </Button>
             </div>
-            <div className="flex gap-4">
-              <div className="text-center flex-1">
-                <p className="text-[24px] font-bold text-ios-yellow">
-                  {dashboard.tasks.pending}
-                </p>
-                <p className="text-[12px] text-ios-gray">в ожидании</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center p-3 bg-ios-card-secondary rounded-lg">
+                <p className="text-[24px] font-bold text-ios-yellow">{dashboard.tasks.pending}</p>
+                <p className="text-[12px] text-ios-gray mt-1">в ожидании</p>
               </div>
-              <div className="text-center flex-1">
-                <p className="text-[24px] font-bold text-ios-red">
-                  {dashboard.tasks.critical}
-                </p>
-                <p className="text-[12px] text-ios-gray">критичных</p>
+              <div className="text-center p-3 bg-ios-card-secondary rounded-lg">
+                <p className="text-[24px] font-bold text-ios-red">{dashboard.tasks.critical}</p>
+                <p className="text-[12px] text-ios-gray mt-1">критичных</p>
               </div>
             </div>
           </div>

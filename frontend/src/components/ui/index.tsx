@@ -14,7 +14,7 @@ export function Card({ children, className, onClick, large }: CardProps) {
       className={clsx(
         large ? 'rounded-[20px] p-5' : 'rounded-[12px] p-4',
         'bg-ios-card',
-        onClick && 'active:opacity-70 cursor-pointer transition-opacity',
+        onClick && 'active:scale-[0.98] cursor-pointer transition-transform',
         className
       )}
       onClick={onClick}
@@ -27,7 +27,7 @@ export function Card({ children, className, onClick, large }: CardProps) {
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'gradient';
   size?: 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   disabled?: boolean;
@@ -43,13 +43,14 @@ export function Button({
   disabled = false,
   className,
 }: ButtonProps) {
-  const baseStyles = 'font-semibold rounded-[12px] transition-all active:scale-[0.98]';
+  const baseStyles = 'font-semibold rounded-[12px] transition-all active:scale-[0.96]';
   
   const variantStyles = {
-    primary: 'bg-ios-primary text-white',
+    primary: 'bg-ios-blue text-white',
     secondary: 'bg-ios-card-secondary text-white',
     danger: 'bg-ios-red text-white',
-    ghost: 'bg-transparent text-ios-primary',
+    ghost: 'bg-transparent text-ios-blue',
+    gradient: 'bg-gradient-blue text-white shadow-glow',
   };
 
   const sizeStyles = {
@@ -105,7 +106,7 @@ export function Input({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white placeholder-ios-gray focus:outline-none focus:bg-[#3C3C3E] transition-colors"
+        className="w-full bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white placeholder-ios-gray focus:outline-none focus:border-ios-blue border border-transparent transition-all"
       />
     </div>
   );
@@ -139,16 +140,14 @@ export function Slider({
       <div className="flex justify-between items-center mb-2">
         {label && <label className="text-[17px] font-medium">{label}</label>}
         {showValue && (
-          <span className="text-ios-primary font-semibold text-[17px]">
-            {value}
-          </span>
+          <span className="text-ios-blue font-bold text-[17px]">{value}</span>
         )}
       </div>
       <div className="relative h-7 touch-none">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full h-[7px] bg-ios-card-secondary rounded-full overflow-hidden">
             <div
-              className="h-full bg-ios-primary rounded-full transition-all"
+              className="h-full bg-gradient-blue rounded-full transition-all duration-300"
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -163,7 +162,7 @@ export function Slider({
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
         <div
-          className="absolute w-[28px] h-[28px] bg-white rounded-full shadow-lg pointer-events-none transition-all"
+          className="absolute w-[28px] h-[28px] bg-ios-blue rounded-full shadow-lg pointer-events-none transition-all duration-200"
           style={{
             left: `calc(${percentage}% - 14px)`,
             top: '50%',
@@ -195,7 +194,7 @@ export function Toggle({ enabled, onChange, label, className }: ToggleProps) {
       >
         <div
           className={clsx(
-            'absolute top-[2px] w-[27px] h-[27px] bg-white rounded-full shadow transition-transform',
+            'absolute top-[2px] w-[27px] h-[27px] bg-white rounded-full shadow transition-transform duration-300',
             enabled ? 'translate-x-[20px]' : 'translate-x-[2px]'
           )}
         />
@@ -207,26 +206,28 @@ export function Toggle({ enabled, onChange, label, className }: ToggleProps) {
 interface ProgressBarProps {
   value: number;
   max?: number;
-  color?: 'green' | 'yellow' | 'red' | 'blue' | 'primary';
+  color?: 'green' | 'yellow' | 'red' | 'blue' | 'gold';
   showLabel?: boolean;
   className?: string;
+  animated?: boolean;
 }
 
 export function ProgressBar({
   value,
   max = 100,
-  color = 'primary',
+  color = 'blue',
   showLabel = true,
   className,
+  animated = true,
 }: ProgressBarProps) {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
   
   const colorStyles = {
-    green: 'bg-ios-green',
+    green: 'bg-gradient-green',
     yellow: 'bg-ios-yellow',
-    red: 'bg-ios-red',
-    blue: 'bg-ios-blue',
-    primary: 'bg-ios-primary',
+    red: 'bg-gradient-red',
+    blue: 'bg-gradient-blue',
+    gold: 'bg-gradient-gold',
   };
 
   return (
@@ -238,7 +239,11 @@ export function ProgressBar({
       )}
       <div className="w-full h-[8px] bg-ios-card-secondary rounded-full overflow-hidden">
         <div
-          className={clsx('h-full rounded-full transition-all', colorStyles[color])}
+          className={clsx(
+            'h-full rounded-full transition-all duration-500',
+            colorStyles[color],
+            animated && 'animate-pulse'
+          )}
           style={{ width: `${percentage}%` }}
         />
       </div>
@@ -295,7 +300,7 @@ export function StatusBadge({ status, children, className }: StatusBadgeProps) {
   return (
     <span
       className={clsx(
-        'px-2.5 py-1 rounded-full text-[13px] font-medium',
+        'px-2.5 py-1 rounded-full text-[13px] font-semibold',
         colorStyles[status],
         className
       )}
@@ -321,7 +326,7 @@ export function LoadingSpinner({ size = 'md', className }: LoadingSpinnerProps) 
     <div className={clsx('flex justify-center items-center', className)}>
       <div
         className={clsx(
-          'border-2 border-ios-card-secondary border-t-ios-primary rounded-full animate-spin',
+          'border-2 border-ios-card-secondary border-t-ios-blue rounded-full animate-spin',
           sizeStyles[size]
         )}
       />
@@ -345,13 +350,13 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <div className={clsx('flex flex-col items-center justify-center py-12 px-6 text-center', className)}>
-      <span className="text-[64px] mb-4">{icon}</span>
-      <h3 className="text-[20px] font-semibold mb-2">{title}</h3>
+    <div className={clsx('ios-empty-state', className)}>
+      <span className="ios-empty-state-icon">{icon}</span>
+      <h3 className="ios-empty-state-title">{title}</h3>
       {description && (
-        <p className="text-ios-gray text-[15px] mb-4 max-w-[280px]">{description}</p>
+        <p className="ios-empty-state-description">{description}</p>
       )}
-      {action}
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
