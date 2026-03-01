@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
-const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:3000/api';
+// Get API URL from environment or default to Vercel production URL
+const API_URL = (import.meta as any).env.VITE_API_URL || 'https://life-os-seven-khaki.vercel.app/api';
 
 class ApiService {
   private client: AxiosInstance;
@@ -50,7 +51,7 @@ class ApiService {
   async authTelegram(initData: string) {
     console.log('[Auth] Sending initData to backend');
     try {
-      const response = await this.client.post('/auth/telegram', { initData });
+      const response = await this.client.post('/auth', { initData });
       console.log('[Auth] Success:', response.data);
       return response.data;
     } catch (error: any) {
