@@ -27,6 +27,7 @@ export function TrackingPage() {
     mood: 5,
     selfDevMinutes: 30,
     personalLifeScore: 7,
+    notes: '',
   });
 
   useEffect(() => {
@@ -47,9 +48,30 @@ export function TrackingPage() {
         mood: metrics.mood || 5,
         selfDevMinutes: metrics.selfDevMinutes || 30,
         personalLifeScore: metrics.personalLifeScore || 7,
+        notes: metrics.notes || '',
       });
     }
   }, [metrics]);
+
+  const updateStreak = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const lastTracked = localStorage.getItem('lifeos_last_tracked');
+    let streak = Number(localStorage.getItem('lifeos_streak') || 0);
+
+    if (lastTracked === today) return;
+
+    if (!lastTracked) {
+      streak = 1;
+    } else {
+      const diff = Math.floor(
+        (new Date(today).getTime() - new Date(lastTracked).getTime()) / (24 * 60 * 60 * 1000)
+      );
+      streak = diff === 1 ? streak + 1 : 1;
+    }
+
+    localStorage.setItem('lifeos_last_tracked', today);
+    localStorage.setItem('lifeos_streak', String(streak));
+  };
 
   const handleSave = async () => {
     try {
@@ -57,6 +79,7 @@ export function TrackingPage() {
         date: new Date().toISOString().split('T')[0],
         ...localMetrics,
       });
+      updateStreak();
     } catch (error) {
       console.error('Failed to save metrics:', error);
     }
@@ -92,25 +115,21 @@ export function TrackingPage() {
       />
 
       <main className="px-4 py-4 space-y-4">
-        {/* Сон */}
         <SleepTracker
           hours={localMetrics.sleepHours}
           onChange={(value) => setLocalMetrics(prev => ({ ...prev, sleepHours: value }))}
         />
 
-        {/* Вода */}
         <WaterTracker
           value={localMetrics.waterMl}
           onAdd={handleAddWater}
         />
 
-        {/* Настроение */}
         <MoodTracker
           value={localMetrics.mood}
           onChange={(value) => setLocalMetrics(prev => ({ ...prev, mood: value }))}
         />
 
-        {/* Тренировка */}
         <WorkoutTracker
           minutes={localMetrics.workoutMinutes}
           type={localMetrics.workoutType}
@@ -118,7 +137,6 @@ export function TrackingPage() {
           onTypeChange={(value) => setLocalMetrics(prev => ({ ...prev, workoutType: value }))}
         />
 
-        {/* Финансы */}
         <FinanceTracker
           income={localMetrics.income}
           expenses={localMetrics.expenses}
@@ -126,7 +144,6 @@ export function TrackingPage() {
           onExpensesChange={(value) => setLocalMetrics(prev => ({ ...prev, expenses: value }))}
         />
 
-        {/* Работа */}
         <Card>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[32px]">💼</span>
@@ -144,7 +161,6 @@ export function TrackingPage() {
           />
         </Card>
 
-        {/* Саморазвитие */}
         <Card>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[32px]">📚</span>
@@ -162,7 +178,6 @@ export function TrackingPage() {
           />
         </Card>
 
-        {/* Личная жизнь */}
         <Card>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[32px]">❤️</span>
@@ -182,7 +197,6 @@ export function TrackingPage() {
           />
         </Card>
 
-        {/* Питание */}
         <Card>
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[32px]">🍎</span>
@@ -197,6 +211,23 @@ export function TrackingPage() {
             onChange={(e) => setLocalMetrics(prev => ({ ...prev, calories: Number(e.target.value) }))}
             className="w-full bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[17px] text-white focus:outline-none"
             placeholder="0"
+          />
+        </Card>
+
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-[32px]">📝</span>
+            <div>
+              <h3 className="text-[17px] font-semibold">Заметка дня</h3>
+              <p className="text-[13px] text-ios-gray">Краткое отражение</p>
+            </div>
+          </div>
+          <textarea
+            value={localMetrics.notes}
+            onChange={(e) => setLocalMetrics(prev => ({ ...prev, notes: e.target.value }))}
+            rows={4}
+            className="w-full bg-ios-card-secondary rounded-[10px] px-4 py-3 text-[16px] text-white focus:outline-none resize-none"
+            placeholder="Что было важного сегодня?"
           />
         </Card>
       </main>

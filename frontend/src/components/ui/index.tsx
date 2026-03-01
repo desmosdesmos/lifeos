@@ -44,12 +44,12 @@ export function Button({
   className,
 }: ButtonProps) {
   const baseStyles = 'font-semibold rounded-[12px] transition-all active:scale-[0.96]';
-  
+
   const variantStyles = {
-    primary: 'bg-ios-blue text-white',
+    primary: 'bg-ios-primary text-white',
     secondary: 'bg-ios-card-secondary text-white',
     danger: 'bg-ios-red text-white',
-    ghost: 'bg-transparent text-ios-blue',
+    ghost: 'bg-transparent text-ios-primary',
     gradient: 'bg-gradient-blue text-white shadow-glow',
   };
 
@@ -61,6 +61,7 @@ export function Button({
 
   return (
     <button
+      type="button"
       className={clsx(
         baseStyles,
         variantStyles[variant],
@@ -221,7 +222,7 @@ export function ProgressBar({
   animated = true,
 }: ProgressBarProps) {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
-  
+
   const colorStyles = {
     green: 'bg-gradient-green',
     yellow: 'bg-ios-yellow',

@@ -64,7 +64,7 @@ export function TasksPage() {
   };
 
   const categoryIcons: Record<TaskCategory, string> = {
-    HEALTH: '💚',
+    HEALTH: '💙',
     WORK: '💼',
     FINANCE: '💰',
     LEARNING: '📚',
@@ -113,7 +113,6 @@ export function TasksPage() {
         }
       />
 
-      {/* Filters */}
       <div className="px-4 py-2 flex gap-2 overflow-x-auto">
         {(['all', 'pending', 'completed'] as const).map(f => (
           <button
@@ -162,7 +161,6 @@ export function TasksPage() {
               className={task.status === 'COMPLETED' ? 'opacity-60' : ''}
             >
               <div className="flex items-start gap-3">
-                {/* Checkbox */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -179,7 +177,6 @@ export function TasksPage() {
                   )}
                 </button>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className={`text-[17px] font-semibold truncate ${
@@ -205,7 +202,6 @@ export function TasksPage() {
                     )}
                   </div>
 
-                  {/* Checklist preview */}
                   {task.checklist.length > 0 && (
                     <div className="mt-2 flex items-center gap-2">
                       <div className="flex-1 h-1.5 bg-ios-card-secondary rounded-full overflow-hidden">
@@ -228,7 +224,6 @@ export function TasksPage() {
         )}
       </main>
 
-      {/* Create Task Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -304,7 +299,6 @@ export function TasksPage() {
         </div>
       </Modal>
 
-      {/* Task Detail Modal */}
       {selectedTask && (
         <Modal
           isOpen={!!selectedTask}
@@ -362,7 +356,6 @@ export function TasksPage() {
               </div>
             )}
 
-            {/* Checklist */}
             <div>
               <h4 className="text-[17px] font-semibold mb-3">Чек-лист</h4>
               <div className="space-y-2">
@@ -398,7 +391,6 @@ export function TasksPage() {
         </Modal>
       )}
 
-      {/* Delete Confirmation Action Sheet */}
       <ActionSheet
         isOpen={isDeleteSheetOpen}
         onClose={() => setIsDeleteSheetOpen(false)}

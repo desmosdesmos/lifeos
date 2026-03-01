@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header, TabBar } from '@/components/navigation';
 import { Card, Button, LoadingSpinner, EmptyState } from '@/components/ui';
-import { LifeScoreRing, RecommendationCard, WheelChart } from '@/components/dashboard';
+import { WheelChart } from '@/components/dashboard';
 import { useNavigate } from 'react-router-dom';
 import apiService from '@/services/api';
 
@@ -35,16 +35,16 @@ export function AnalyticsPage() {
   ];
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    fetchAnalytics(selectedSphere);
+  }, [selectedSphere]);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (sphereId: string) => {
     setLoading(true);
     try {
       const [wheelRes, correlationsRes, progressRes] = await Promise.all([
         apiService.getLifeWheel(7),
         apiService.getCorrelations(30),
-        apiService.getProgress(30, selectedSphere !== 'all' ? selectedSphere : undefined),
+        apiService.getProgress(30, sphereId !== 'all' ? sphereId : undefined),
       ]);
 
       setWheelData(wheelRes.wheel);
@@ -75,8 +75,12 @@ export function AnalyticsPage() {
   const handleCopyReport = async () => {
     try {
       const response = await apiService.getFullReport(30);
-      await navigator.clipboard.writeText(response.rawText);
-      alert('Отчёт скопирован в буфер обмена!');
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(response.rawText);
+        alert('Отчёт скопирован в буфер обмена!');
+      } else {
+        alert('Clipboard недоступен. Скачайте отчёт.');
+      }
     } catch (error) {
       console.error('Failed to copy report:', error);
     }
@@ -108,7 +112,6 @@ export function AnalyticsPage() {
       />
 
       <main className="px-4 py-4 space-y-4">
-        {/* Export for AI */}
         <Card large className="bg-gradient-to-br from-ios-primary/20 to-ios-purple/20">
           <div className="flex items-center gap-3 mb-3">
             <span className="text-[32px]">🤖</span>
@@ -139,7 +142,6 @@ export function AnalyticsPage() {
           </div>
         </Card>
 
-        {/* LifeScore Trend */}
         <Card>
           <h3 className="text-[17px] font-semibold mb-4">Динамика LifeScore</h3>
           {lifeScoreTrend.length > 0 ? (
@@ -162,15 +164,11 @@ export function AnalyticsPage() {
           )}
         </Card>
 
-        {/* Sphere Selector */}
         <div className="flex gap-2 overflow-x-auto py-2">
           {spheres.map(sphere => (
             <button
               key={sphere.id}
-              onClick={() => {
-                setSelectedSphere(sphere.id);
-                fetchAnalytics();
-              }}
+              onClick={() => setSelectedSphere(sphere.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors ${
                 selectedSphere === sphere.id
                   ? 'bg-ios-primary text-white'
@@ -183,7 +181,6 @@ export function AnalyticsPage() {
           ))}
         </div>
 
-        {/* Wheel Chart */}
         {wheelData && (
           <Card large>
             <h3 className="text-[18px] font-semibold mb-4 text-center">
@@ -193,7 +190,6 @@ export function AnalyticsPage() {
           </Card>
         )}
 
-        {/* Correlations */}
         <div>
           <h3 className="text-[17px] font-semibold mb-3">Корреляции</h3>
           {correlations.length > 0 ? (
@@ -230,41 +226,39 @@ export function AnalyticsPage() {
           )}
         </div>
 
-        {/* Weekly Stats */}
         <Card>
           <h3 className="text-[17px] font-semibold mb-4">Советы по анализу</h3>
           <div className="space-y-3 text-[15px] text-ios-gray">
             <div className="flex items-start gap-3">
               <span className="text-[20px]">💡</span>
               <p>
-                Положительная корреляция между сном и настроением означает, 
+                Положительная корреляция между сном и настроением означает,
                 что качественный сон улучшает ваше эмоциональное состояние.
               </p>
             </div>
             <div className="flex items-start gap-3">
               <span className="text-[20px]">📈</span>
               <p>
-                Следите за трендом LifeScore — рост показателя говорит 
+                Следите за трендом LifeScore — рост показателя говорит
                 о гармоничном развитии всех сфер жизни.
               </p>
             </div>
             <div className="flex items-start gap-3">
               <span className="text-[20px]">🎯</span>
               <p>
-                Колесо баланса показывает, какие сферы требуют большего внимания. 
+                Колесо баланса показывает, какие сферы требуют большего внимания.
                 Стремитесь к равномерному развитию.
               </p>
             </div>
           </div>
         </Card>
 
-        {/* AI Export Info */}
         <Card className="border border-ios-primary/30">
           <h3 className="text-[17px] font-semibold mb-3 text-ios-primary">
             🚀 Экспорт для AI-анализа
           </h3>
           <p className="text-[14px] text-ios-gray mb-3">
-            Скопируйте отчёт и вставьте в ChatGPT, Qwen или другую AI-систему 
+            Скопируйте отчёт и вставьте в ChatGPT, Qwen или другую AI-систему
             для получения персонализированных рекомендаций.
           </p>
           <div className="flex gap-2">

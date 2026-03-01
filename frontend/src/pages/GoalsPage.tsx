@@ -93,7 +93,6 @@ export function GoalsPage() {
         }
       />
 
-      {/* Filters */}
       <div className="px-4 py-2 flex gap-2 overflow-x-auto">
         {(['all', 'active', 'completed'] as const).map(f => (
           <button
@@ -160,7 +159,6 @@ export function GoalsPage() {
                 </span>
               </div>
 
-              {/* Progress */}
               <ProgressBar
                 value={goal.progress}
                 color={goal.progress >= 100 ? 'green' : goal.progress >= 50 ? 'blue' : 'yellow'}
@@ -168,7 +166,6 @@ export function GoalsPage() {
                 className="mb-3"
               />
 
-              {/* Value controls */}
               <div className="flex items-center justify-between">
                 <span className="text-[15px] text-ios-gray">
                   {goal.currentValue} / {goal.targetValue} {goal.unit}
@@ -193,7 +190,6 @@ export function GoalsPage() {
                 )}
               </div>
 
-              {/* Description */}
               {goal.description && (
                 <p className="text-[14px] text-ios-gray mt-3">{goal.description}</p>
               )}
@@ -202,7 +198,6 @@ export function GoalsPage() {
         )}
       </main>
 
-      {/* Create Goal Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -223,7 +218,7 @@ export function GoalsPage() {
             label="Название"
             value={newGoal.title}
             onChange={(value) => setNewGoal(prev => ({ ...prev, title: value }))}
-            placeholder="Например: Похудеть на 5 кг"
+            placeholder="Например: похудеть на 5 кг"
           />
 
           <div>

@@ -84,6 +84,39 @@ html, body, #root {
   overflow-x: hidden;
 }
 
+body {
+  position: relative;
+  line-height: 1.35;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  background:
+    radial-gradient(600px 600px at 10% 10%, rgba(0, 122, 255, 0.18), transparent 60%),
+    radial-gradient(700px 700px at 90% 20%, rgba(191, 90, 242, 0.16), transparent 60%),
+    radial-gradient(900px 900px at 50% 80%, rgba(48, 209, 88, 0.12), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* Safe Area */
 .safe-top {
   padding-top: var(--safe-top);
@@ -161,6 +194,22 @@ html, body, #root {
   }
 }
 
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -213,6 +262,14 @@ html, body, #root {
 
 .animate-slide-in-left {
   animation: slideInLeft 0.4s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-float {
+  animation: floatSoft 6s ease-in-out infinite;
 }
 
 .animate-pulse {

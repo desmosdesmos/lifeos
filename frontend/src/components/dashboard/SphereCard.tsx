@@ -21,7 +21,7 @@ export function SphereCard({
   className,
 }: SphereCardProps) {
   const percentage = target > 0 ? Math.min(100, (value / target) * 100) : 0;
-  
+
   const statusColors = {
     critical: 'border-ios-red',
     warning: 'border-ios-yellow',
@@ -56,7 +56,7 @@ export function SphereCard({
           <span className="font-medium text-[15px] truncate">{name}</span>
           <span className="text-[13px] text-ios-gray">{Math.round(percentage)}%</span>
         </div>
-        
+
         <div className="w-full h-1.5 bg-ios-card-secondary rounded-full overflow-hidden">
           <div
             className={clsx(
@@ -69,7 +69,7 @@ export function SphereCard({
             style={{ width: `${percentage}%` }}
           />
         </div>
-        
+
         <div className="flex justify-between mt-1">
           <span className="text-[12px] text-ios-gray">{value}</span>
           <span className="text-[12px] text-ios-gray">цель: {target}</span>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { SphereIcon, Slider, Button, Card } from '@/components/ui';
 import { SphereType } from '@/types';
 
@@ -34,7 +33,7 @@ export function SphereTracker({
           <p className="text-[13px] text-ios-gray">{unit}</p>
         </div>
       </div>
-      
+
       <Slider
         value={typeof value === 'number' ? value : 0}
         onChange={onChange}
@@ -56,7 +55,6 @@ interface WaterTrackerProps {
 
 export function WaterTracker({ value, target = 2500, onAdd, className }: WaterTrackerProps) {
   const percentage = Math.min(100, (value / target) * 100);
-  
   const quickAdd = [250, 500, 750];
 
   return (
@@ -76,7 +74,6 @@ export function WaterTracker({ value, target = 2500, onAdd, className }: WaterTr
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="w-full h-3 bg-ios-card-secondary rounded-full overflow-hidden mb-4">
         <div
           className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all"
@@ -84,7 +81,6 @@ export function WaterTracker({ value, target = 2500, onAdd, className }: WaterTr
         />
       </div>
 
-      {/* Quick add buttons */}
       <div className="flex gap-2">
         {quickAdd.map(ml => (
           <Button
@@ -134,7 +130,6 @@ export function MoodTracker({ value, onChange, className }: MoodTrackerProps) {
         </div>
       </div>
 
-      {/* Mood grid */}
       <div className="grid grid-cols-5 gap-2">
         {moods.map(mood => (
           <button
@@ -191,7 +186,6 @@ export function WorkoutTracker({
         </div>
       </div>
 
-      {/* Type selection */}
       <div className="grid grid-cols-3 gap-2 mb-4">
         {workoutTypes.map(workout => (
           <button
@@ -209,7 +203,6 @@ export function WorkoutTracker({
         ))}
       </div>
 
-      {/* Minutes slider */}
       <Slider
         value={minutes}
         onChange={onMinutesChange}
@@ -253,7 +246,6 @@ export function FinanceTracker({
       </div>
 
       <div className="space-y-3">
-        {/* Income */}
         <div>
           <label className="block text-ios-gray text-[13px] mb-1.5 ml-1">
             Доход
@@ -267,7 +259,6 @@ export function FinanceTracker({
           />
         </div>
 
-        {/* Expenses */}
         <div>
           <label className="block text-ios-gray text-[13px] mb-1.5 ml-1">
             Расход
@@ -321,7 +312,6 @@ export function SleepTracker({ hours, onChange, className }: SleepTrackerProps) 
         showValue
       />
 
-      {/* Recommendations */}
       <div className="mt-4 p-3 bg-ios-card-secondary rounded-[10px]">
         <p className="text-[13px] text-ios-gray">
           {hours < 6 && '⚠️ Рекомендуется спать 7-9 часов для оптимального восстановления.'}

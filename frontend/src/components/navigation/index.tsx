@@ -29,6 +29,7 @@ export function TabBar({ activeTab, onTabChange, className }: TabBarProps) {
         {tabs.map(tab => (
           <button
             key={tab.id}
+            type="button"
             onClick={() => onTabChange(tab.id)}
             className={clsx(
               'flex flex-col items-center py-2 px-3 min-w-[64px]',
@@ -78,11 +79,11 @@ export function Header({
         className
       )}
     >
-      <div className="flex items-center justify-between h-[56px] px-4">
-        {/* Back button */}
+      <div className="flex items-center justify-between px-4 py-2 min-h-[56px]">
         <div className="w-10">
           {onBack && (
             <button
+              type="button"
               onClick={onBack}
               className="flex items-center text-ios-primary active:opacity-70"
             >
@@ -91,15 +92,13 @@ export function Header({
           )}
         </div>
 
-        {/* Title */}
         <div className="flex-1 text-center">
-          <h1 className="text-[17px] font-semibold">{title}</h1>
+          <h1 className="text-[17px] font-semibold leading-tight">{title}</h1>
           {subtitle && (
-            <p className="text-[12px] text-ios-gray -mt-0.5">{subtitle}</p>
+            <p className="text-[12px] text-ios-gray leading-tight mt-0.5">{subtitle}</p>
           )}
         </div>
 
-        {/* Right action */}
         <div className="w-10 flex justify-end">
           {rightAction}
         </div>
@@ -129,13 +128,11 @@ export function Modal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      
-      {/* Modal content */}
+
       <div
         className={clsx(
           'relative w-full sm:max-w-md sm:mx-4',
@@ -145,10 +142,10 @@ export function Modal({
           className
         )}
       >
-        {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-4 border-b border-ios-separator bg-ios-card">
           <h2 className="text-[18px] font-semibold">{title}</h2>
           <button
+            type="button"
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full bg-ios-card-secondary active:opacity-70"
           >
@@ -156,12 +153,10 @@ export function Modal({
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-4">
           {children}
         </div>
 
-        {/* Footer */}
         {footer && (
           <div className="sticky bottom-0 p-4 border-t border-ios-separator bg-ios-card">
             {footer}
@@ -188,24 +183,21 @@ export function ActionSheet({ isOpen, onClose, title, actions }: ActionSheetProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      
-      {/* Actions */}
+
       <div className="relative w-full max-w-md mx-4 mb-4 animate-slide-up">
-        {/* Title */}
         <div className="bg-ios-card rounded-t-[12px] p-4 text-center border-b border-ios-separator">
           <span className="text-[13px] text-ios-gray font-medium">{title}</span>
         </div>
 
-        {/* Action buttons */}
         <div className="bg-ios-card rounded-b-[12px] overflow-hidden">
           {actions.map((action, index) => (
             <button
               key={index}
+              type="button"
               onClick={() => {
                 action.onClick();
                 onClose();

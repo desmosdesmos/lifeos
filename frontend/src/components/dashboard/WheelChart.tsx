@@ -11,7 +11,7 @@ export function WheelChart({ data, size = 300, className }: WheelChartProps) {
   const centerX = size / 2;
   const centerY = size / 2;
   const radius = size * 0.35;
-  
+
   const colors = [
     '#667eea', '#00c6fb', '#f093fb', '#4facfe', '#43e97b',
     '#fa709a', '#a18cd1', '#ff9a9e', '#ffecd2',
@@ -48,7 +48,7 @@ export function WheelChart({ data, size = 300, className }: WheelChartProps) {
     <div className={clsx('flex flex-col items-center', className)}>
       <svg width={size} height={size} className="max-w-full">
         <circle cx={centerX} cy={centerY} r={radius} fill="#1C1C1E" />
-        
+
         {segments.map((segment, index) => (
           <path
             key={index}
@@ -58,9 +58,9 @@ export function WheelChart({ data, size = 300, className }: WheelChartProps) {
             className="transition-opacity hover:opacity-100"
           />
         ))}
-        
+
         <circle cx={centerX} cy={centerY} r={radius * 0.5} fill="#000000" />
-        
+
         <text
           x={centerX}
           y={centerY - 5}
@@ -81,7 +81,7 @@ export function WheelChart({ data, size = 300, className }: WheelChartProps) {
           {Math.round(data.reduce((a, b) => a + b.percentage, 0) / data.length)}%
         </text>
       </svg>
-      
+
       <div className="grid grid-cols-3 gap-2 mt-4 w-full">
         {data.map((item, index) => (
           <div key={index} className="flex items-center gap-1.5">

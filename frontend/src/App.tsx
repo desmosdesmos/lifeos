@@ -8,7 +8,6 @@ import { AnalyticsPage } from '@/pages/AnalyticsPage';
 import telegramService from '@/services/telegram';
 import apiService from '@/services/api';
 
-// Страница авторизации
 function AuthPage({ onAuth }: { onAuth: (token: string) => void }) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,10 +19,8 @@ function AuthPage({ onAuth }: { onAuth: (token: string) => void }) {
   }, []);
 
   const handleAuthSuccess = (response: any) => {
-    console.log('[Auth] Success response:', response);
     if (response.success && response.token) {
       localStorage.setItem('token', response.token);
-      console.log('[Auth] Token saved to localStorage');
       onAuth(response.token);
     }
   };
@@ -34,14 +31,14 @@ function AuthPage({ onAuth }: { onAuth: (token: string) => void }) {
     try {
       const initData = telegramService.getInitData();
       if (!initData) {
-        setError('Telegram initData not available');
+        setError('Telegram initData недоступен');
         setIsAuthenticating(false);
         return;
       }
       const response = await apiService.authTelegram(initData);
       handleAuthSuccess(response);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Authentication failed');
+      setError(err.response?.data?.error || 'Ошибка авторизации');
       setIsAuthenticating(false);
     }
   };
@@ -51,13 +48,10 @@ function AuthPage({ onAuth }: { onAuth: (token: string) => void }) {
     setIsAuthenticating(true);
     setError(null);
     try {
-      console.log('[DevAuth] Sending request with ID:', devTelegramId);
       const response = await apiService.authDev(devTelegramId, 'dev_user', 'Dev User');
-      console.log('[DevAuth] Response:', response);
       handleAuthSuccess(response);
     } catch (err: any) {
-      console.error('[DevAuth] Error:', err);
-      setError(err.response?.data?.error || 'Authentication failed');
+      setError(err.response?.data?.error || 'Ошибка авторизации');
       setIsAuthenticating(false);
     }
   };
@@ -126,14 +120,6 @@ function AuthPage({ onAuth }: { onAuth: (token: string) => void }) {
   );
 }
 
-// Защищённый роут
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem('token');
-  if (!token) return <Navigate to="/auth" replace />;
-  return <>{children}</>;
-}
-
-// Главный компонент приложения
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -143,8 +129,7 @@ function App() {
     telegramService.init();
   }, []);
 
-  const handleAuth = (token: string) => {
-    console.log('[App] Auth successful, token saved');
+  const handleAuth = () => {
     setIsAuthenticated(true);
   };
 
