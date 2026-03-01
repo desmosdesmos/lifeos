@@ -79,8 +79,8 @@ export function Header({
         className
       )}
     >
-      <div className="flex items-center justify-between px-4 py-2 min-h-[56px]">
-        <div className="w-10">
+      <div className="relative flex items-center justify-between px-4 py-2 min-h-[56px]">
+        <div className="min-w-[44px]">
           {onBack && (
             <button
               type="button"
@@ -92,14 +92,18 @@ export function Header({
           )}
         </div>
 
-        <div className="flex-1 text-center">
-          <h1 className="text-[17px] font-semibold leading-tight">{title}</h1>
-          {subtitle && (
-            <p className="text-[12px] text-ios-gray leading-tight mt-0.5">{subtitle}</p>
-          )}
+        <div className="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
+          <div className="mx-auto max-w-[calc(100%-120px)]">
+            <h1 className="text-[17px] font-semibold leading-tight truncate">{title}</h1>
+            {subtitle && (
+              <p className="text-[12px] text-ios-gray leading-tight mt-0.5 truncate">
+                {subtitle}
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="w-10 flex justify-end">
+        <div className="min-w-[44px] flex justify-end">
           {rightAction}
         </div>
       </div>
